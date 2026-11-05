@@ -168,17 +168,35 @@ CONN_CNT=$(ss -tanH state established | wc -l)
 REPORT="report_$(date +%F_%H-%M-%S).txt"
 
 main() {
+
   # Save all output to a report file and show it on screen
   exec > >(tee "$REPORT") 2>&1
-  print_header
-  print_system
-  print_cpu
-  print_memory
-  print_disk
-  print_top_cpu
-  print_top_mem
-  print_ip
-  print_network
+
+  usage() {
+  echo "Usage: $0 [--all|--cpu|--memory|--disk|--top_cpu|--top_mem|--ip|--network]"
+}
+  case "${1:---all}" in
+    --cpu) print_cpu ;;
+    --memory) print_memory ;;
+    --disk) print_disk ;;
+    --top_cpu) print_top_cpu ;;
+    --top_mem) print_top_mem ;;
+    --ip) print_ip ;;
+    --network) print_network ;;
+    --all) print_header
+         print_system
+         print_cpu
+         print_memory
+         print_disk
+         print_top_cpu
+         print_top_mem
+         print_ip
+         print_network ;;
+    -h|--help) usage ;;
+
+    *)        echo "Unknown option: $1"; usage; exit 1 ;;
+  esac
+
 }
 
-main
+main "$@"
